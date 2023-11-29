@@ -9,7 +9,6 @@ form.addEventListener("submit", function (e) {
     const birthYear = document.getElementById('year');
     const year = parseInt(birthYear.value);
     const address = document.getElementById('address');
-    const addressRegex = /^[a-zA-Z\s]+\s\d+[a-zA-Z]?$/;
     const city = document.getElementById('city');
     const termsAndConditions = document.getElementById('terms_and_conditions');
 
@@ -48,15 +47,15 @@ form.addEventListener("submit", function (e) {
     }
 
     // Validate Address (should not be empty and should contain street name and number)
-    if (address.value === "" || !addressRegex.test(address.value)) {
+    if (address.value === "" || !/^[a-zA-Z\s]+\s\d+[a-zA-Z]?$/.test(address.value)) {
         setInvalid(address, 'Please provide a valid address');
         isValid = false;
     } else {
         setValid(address);
     }
 
-    // Validate City (should not be empty and should contain only letters)
-    if (city.value === "" || !/^[a-zA-Z]+$/.test(city.value)) {
+    // Validate City (should not be empty and should contain only letters and a space between words)
+    if (city.value === "" || !/^[a-zA-Z\s]+$/.test(city.value)) {
         setInvalid(city, 'Please provide a valid city');
         isValid = false;
     } else {
@@ -80,16 +79,16 @@ form.addEventListener("submit", function (e) {
         city: city.value
     }
 
-    
-
     if (isValid) {
-        // Submit the form via AJAX 
+        // Submit the form
         
-        const formData = new FormData(form);
-        const data = Object.fromEntries(formData);
+        const data = finalData;
 
-        fetch('https://jsonplaceholder.typicode.com/posts', {
+        fetch('https://reqres.in/api/users', {
             method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify(data)
         })
         .then(response => {
@@ -100,7 +99,7 @@ form.addEventListener("submit", function (e) {
         })
         .then(data => {
             console.log('Success:', data);
-            displaySuccessMessage(finalData);
+            displaySuccessMessage(data);
         })
         .catch(error => {
             console.error('Error:', error);
